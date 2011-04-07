@@ -48,13 +48,13 @@ L = LDN[0].to_i
 D = LDN[1].to_i
 N = LDN[2].to_i
 
-for i in 0...D
+for i in 1..D
 	$words += '|' + gets.chomp
 end
 $words += '|'
 
-for i in 0...N
+for i in 1..N
 	tCase = gets.chomp
 	ans = solve(tCase, "", 0)
-	puts "Case #" + (i + 1).to_s + ": " + ans.to_s
+	puts "Case #" + i.to_s + ": " + ans.to_s
 end
