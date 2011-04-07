@@ -11,8 +11,19 @@ def display solution
 	end
 end
 
-def next_letter x
-	return (x.ord + 1).chr
+def next_unused_letter sol
+
+	x = 'a'.ord
+
+	for i in 0...sol.size
+		for j in 0...sol[0].size
+			if sol[i][j].ord > x
+				x = sol[i][j].ord
+			end
+		end
+	end
+
+	return (x + 1).chr
 end
 
 # Determines where to go next - ties broken in order of: North > West > East > South
@@ -50,44 +61,44 @@ def next_path map, h, w
 		sw = w
 	end
 
-	#puts "("+h.to_s+","+w.to_s+") N = " + hasNorth.to_s + " W = " + hasWest.to_s + " E = " + hasEast.to_s + " S = " + hasSouth.to_s + " "
+	##puts "("+h.to_s+","+w.to_s+") N = " + hasNorth.to_s + " W = " + hasWest.to_s + " E = " + hasEast.to_s + " S = " + hasSouth.to_s + " "
 
-	center = map[h][w]
-	north = map[nh][nw] if hasNorth
-	west = map[wh][ww] if hasWest
-	east = map[eh][ew] if hasEast
-	south = map[sh][sw] if hasSouth
+	center = map[h][w].to_i
+	north = map[nh][nw].to_i if hasNorth
+	west = map[wh][ww].to_i if hasWest
+	east = map[eh][ew].to_i if hasEast
+	south = map[sh][sw].to_i if hasSouth
 
 	low = center
 	lh = h
 	lw = w
 
 	if hasNorth && north < low
-		#puts "setting low " + low.to_s + " to north " + north.to_s
+		##puts "setting low " + low.to_s + " to north " + north.to_s
 		low = north
 		lh = nh
 		lw = nw
 	end
 	if hasWest && west < low
-		#puts "setting low " + low.to_s + " to west " + west.to_s
+		##puts "setting low " + low.to_s + " to west " + west.to_s
 		low = west
 		lh = wh
 		lw = ww
 	end
 	if hasEast && east < low
-		#puts "setting low " + low.to_s + " to east " + east.to_s
+		##puts "setting low " + low.to_s + " to east " + east.to_s
 		low = east
 		lh = eh
 		lw = ew
 	end
 	if hasSouth && south < low
-		#puts "setting low " + low.to_s + " to south " + south.to_s
+		##puts "setting low " + low.to_s + " to south " + south.to_s
 		low = south
 		lh = sh
 		lw = sw
 	end
 
-	#puts "("+h.to_s+","+w.to_s+") going next to (" + lh.to_s + "," + lw.to_s + ")"
+	##puts "("+h.to_s+","+w.to_s+") going next to (" + lh.to_s + "," + lw.to_s + ")"
 	return lh, lw
 end
 
@@ -117,10 +128,9 @@ end
 
 def traverse map, sol, x, y, l
 
-	#puts "--SOL--"
+	#puts "------"
 	#display sol
-	#puts "--MAP--"
-	#display map
+	#puts
 
 	# First lets see if this cell has a letter
 	if sol[x][y].ord >= 'a'.ord
@@ -136,7 +146,7 @@ def traverse map, sol, x, y, l
 
 	# If it's the same coords, we're in a sink
 	if a == x && b == y
-		#puts "Sink at " + x.to_s + " " + y.to_s
+		##puts "Sink at " + x.to_s + " " + y.to_s
 		# If we're in a sink, we can just return the letter it's become
 		return sol[x][y]
 	end
@@ -158,8 +168,8 @@ def solve map
 
 	while !solved solution
 		x,y = next_point solution
-		letter = traverse map, solution, x, y, letter
-		letter = next_letter letter
+		traverse map, solution, x, y, letter
+		letter = next_unused_letter solution
 	end
 
 	return solution
