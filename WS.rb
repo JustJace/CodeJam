@@ -1,5 +1,6 @@
 # Watersheds
 
+# Displays the array in grid format
 def display solution
 	for i in 0...solution.size
 		for j in 0...solution[0].size
@@ -11,6 +12,7 @@ def display solution
 	end
 end
 
+# Returns the next unused letter in the solution
 def next_unused_letter sol
 
 	x = 'a'.ord
@@ -61,8 +63,6 @@ def next_path map, h, w
 		sw = w
 	end
 
-	##puts "("+h.to_s+","+w.to_s+") N = " + hasNorth.to_s + " W = " + hasWest.to_s + " E = " + hasEast.to_s + " S = " + hasSouth.to_s + " "
-
 	center = map[h][w].to_i
 	north = map[nh][nw].to_i if hasNorth
 	west = map[wh][ww].to_i if hasWest
@@ -74,34 +74,30 @@ def next_path map, h, w
 	lw = w
 
 	if hasNorth && north < low
-		##puts "setting low " + low.to_s + " to north " + north.to_s
 		low = north
 		lh = nh
 		lw = nw
 	end
 	if hasWest && west < low
-		##puts "setting low " + low.to_s + " to west " + west.to_s
 		low = west
 		lh = wh
 		lw = ww
 	end
 	if hasEast && east < low
-		##puts "setting low " + low.to_s + " to east " + east.to_s
 		low = east
 		lh = eh
 		lw = ew
 	end
 	if hasSouth && south < low
-		##puts "setting low " + low.to_s + " to south " + south.to_s
 		low = south
 		lh = sh
 		lw = sw
 	end
 
-	##puts "("+h.to_s+","+w.to_s+") going next to (" + lh.to_s + "," + lw.to_s + ")"
 	return lh, lw
 end
 
+# Checks the solution to see if it's put a letter in each cell
 def solved sol
 	for i in 0...sol.size
 		for j in 0...sol[i].size
@@ -114,6 +110,7 @@ def solved sol
 	return true
 end
 
+# Returns the next point Left to Right, Top To Bottom
 def next_point sol
 	for i in 0...sol.size
 		for j in 0...sol[i].size
@@ -126,11 +123,8 @@ def next_point sol
 	return nil, nil
 end
 
+# Recursive method for traversing from a cell
 def traverse map, sol, x, y, l
-
-	#puts "------"
-	#display sol
-	#puts
 
 	# First lets see if this cell has a letter
 	if sol[x][y].ord >= 'a'.ord
@@ -146,7 +140,6 @@ def traverse map, sol, x, y, l
 
 	# If it's the same coords, we're in a sink
 	if a == x && b == y
-		##puts "Sink at " + x.to_s + " " + y.to_s
 		# If we're in a sink, we can just return the letter it's become
 		return sol[x][y]
 	end
@@ -161,8 +154,11 @@ def traverse map, sol, x, y, l
 
 end
 
+
+# Sets up solution grid and begins solving
 def solve map
 
+	# Ridic. work around to get a 'deep copy' of the array
 	solution = Marshal.load( Marshal.dump(map) )
 	letter = 'a'
 
