@@ -31,67 +31,52 @@ end
 # Determines where to go next - ties broken in order of: North > West > East > South
 def next_path map, h, w
 
-	if (h - 1 < 0)
-		hasNorth = false
-	else
-		hasNorth = true
-		nh = h - 1
-		nw = w
-	end
-
-	if (w - 1 < 0)
-		hasWest = false
-	else
-		hasWest = true
-		wh = h
-		ww = w - 1
-	end
-	
-	if (w + 1 >= map[0].size)
-		hasEast = false
-	else
-		hasEast = true
-		eh = h
-		ew = w + 1
-	end
-
-	if (h + 1 >= map.size)
-		hasSouth = false
-	else
-		hasSouth = true
-		sh = h + 1
-		sw = w
-	end
-
-	center = map[h][w].to_i
-	north = map[nh][nw].to_i if hasNorth
-	west = map[wh][ww].to_i if hasWest
-	east = map[eh][ew].to_i if hasEast
-	south = map[sh][sw].to_i if hasSouth
-
-	low = center
+	low = map[h][w].to_i
 	lh = h
 	lw = w
 
-	if hasNorth && north < low
-		low = north
-		lh = nh
-		lw = nw
+	if h - 1 >= 0
+		nh = h - 1
+		nw = w
+		north = map[nh][nw].to_i
+		if north < low
+			low = north
+			lh = nh
+			lw = nw
+		end
 	end
-	if hasWest && west < low
-		low = west
-		lh = wh
-		lw = ww
+
+	if w - 1 >= 0
+		wh = h
+		ww = w - 1
+		west = map[wh][ww].to_i
+		if west < low
+			low = west
+			lh = wh
+			lw = ww
+		end
 	end
-	if hasEast && east < low
-		low = east
-		lh = eh
-		lw = ew
+	
+	if w + 1 < map[0].size
+		eh = h
+		ew = w + 1
+		east = map[eh][ew].to_i
+		if east < low
+			low = east
+			lh = eh
+			lw = ew
+		end
 	end
-	if hasSouth && south < low
-		low = south
-		lh = sh
-		lw = sw
+
+	if h + 1 < map.size
+		sh = h + 1
+		sw = w
+		south = map[sh][sw].to_i
+		if south < low
+			low = south
+			lh = sh
+			lw = sw
+		end
 	end
 
 	return lh, lw
@@ -187,7 +172,7 @@ for i in 1..T
 		map.push gets.chomp.split ' '
 	end
 
-	puts "Case #" + i.to_s + ":"
+	puts "Case #" << i.to_s << ":"
 	display solve map
 	puts
 end
