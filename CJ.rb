@@ -1,6 +1,13 @@
 # Welcome to Code Jam
 
 $WCJ = "welcome to code jam"
+def trim word, ind
+	if ($WCJ.size - ind > word.size)
+		return true
+	else
+		return false
+	end
+end
 
 def solve word, ind, val
 
@@ -15,6 +22,8 @@ def solve word, ind, val
 	while (pos = word.index $WCJ[ind] ) != nil
 		word = word[(pos + 1)...word.size]
 		val = solve(word, ind + 1, val)
+		break if trim(word, ind)
+
 	end
 	return val
 end
