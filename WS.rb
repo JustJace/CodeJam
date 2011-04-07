@@ -1,4 +1,4 @@
-#; Watersheds
+# Watersheds
 
 def display solution
 	for i in 0...solution.size
@@ -9,62 +9,91 @@ def display solution
 			puts
 		end
 	end
-	puts
-	puts "------"
 end
 
 def next_letter x
 	return (x.ord + 1).chr
 end
 
-#; Determines where to go next - ties broken in order of: North > West > East > South
+# Determines where to go next - ties broken in order of: North > West > East > South
 def next_path map, h, w
 
+	if (h - 1 < 0)
+		hasNorth = false
+	else
+		hasNorth = true
+		nh = h - 1
+		nw = w
+	end
+
+	if (w - 1 < 0)
+		hasWest = false
+	else
+		hasWest = true
+		wh = h
+		ww = w - 1
+	end
+	
+	if (w + 1 >= map[0].size)
+		hasEast = false
+	else
+		hasEast = true
+		eh = h
+		ew = w + 1
+	end
+
+	if (h + 1 >= map.size)
+		hasSouth = false
+	else
+		hasSouth = true
+		sh = h + 1
+		sw = w
+	end
+
+	#puts "("+h.to_s+","+w.to_s+") N = " + hasNorth.to_s + " W = " + hasWest.to_s + " E = " + hasEast.to_s + " S = " + hasSouth.to_s + " "
+
 	center = map[h][w]
-	nh = h - 1 < 0 ? h : h - 1
-	nw = w
-
-	wh = h
-	ww = w - 1 < 0 ? w : w - 1
-
-	eh = h
-	ew = w + 1 >= map[0].size ? w : w + 1
-
-	sh = h + 1 >= map.size ? h : h + 1
-	sw = w
-
-	north = map[nh][nw]
-	west = map[wh][ww]
-	east = map[eh][ew]
-	south = map[sh][sw]
+	north = map[nh][nw] if hasNorth
+	west = map[wh][ww] if hasWest
+	east = map[eh][ew] if hasEast
+	south = map[sh][sw] if hasSouth
 
 	low = center
 	lh = h
 	lw = w
 
-	if north < center
+	if hasNorth && north < low
+		#puts "setting low " + low.to_s + " to north " + north.to_s
+		low = north
 		lh = nh
 		lw = nw
 	end
-	if north < center && west < north
+	if hasWest && west < low
+		#puts "setting low " + low.to_s + " to west " + west.to_s
+		low = west
 		lh = wh
 		lw = ww
 	end
-	if north < center && west < north && east < west
+	if hasEast && east < low
+		#puts "setting low " + low.to_s + " to east " + east.to_s
+		low = east
 		lh = eh
 		lw = ew
 	end
-	if north < center && west < north && east < west && south < east
+	if hasSouth && south < low
+		#puts "setting low " + low.to_s + " to south " + south.to_s
+		low = south
 		lh = sh
 		lw = sw
 	end
 
+	#puts "("+h.to_s+","+w.to_s+") going next to (" + lh.to_s + "," + lw.to_s + ")"
 	return lh, lw
 end
 
 def solved sol
-	for i in 0..sol.size
-		for j in 0..sol[i].size
+	for i in 0...sol.size
+		for j in 0...sol[i].size
 			if sol[i][j].ord < 'a'.ord
 				return false
 			end
@@ -75,8 +104,8 @@ def solved sol
 end
 
 def next_point sol
-	for i in 0..sol.size
-		for j in 0..sol[i].size
+	for i in 0...sol.size
+		for j in 0...sol[i].size
 			if sol[i][j].ord < 'a'.ord
 				return i, j
 			end
@@ -87,56 +116,61 @@ def next_point sol
 end
 
 def traverse map, sol, x, y, l
-	#; First we're setting the letter
-	sol[x][y] = l
 
-	#; Then we're getting the next path (looking at the map)
-	a, b = next_path map, x, y
+	#puts "--SOL--"
+	#display sol
+	#puts "--MAP--"
+	#display map
 
-	#; If it's the same coords, it's a sink
-	if a == x && b == y
-		#; So we'll decide what letter it should be and return that up
-
-		#; It's not been set
-		if sol[x][y].ord < 'a'.ord
-			sol[x][y] = l #; Set it
-			return l #; return it
-		#; Else it has a letter already, we're going to use it for this path
-		else 
-			return sol[x][y]
-		end
+	# First lets see if this cell has a letter
+	if sol[x][y].ord >= 'a'.ord
+		#if it does, then we can just return that letter, and we're done with this traverse path
+		return sol[x][y]
 	end
 
-	#; Otherwise it's not a sink, so let's go traversing
-	#; the new coords and trap the letter it brings back
-	new_l = traverse sol, a, b, l
-	#; If it's brought back a new letter, we'll set it now
+	# Otherwise lets set the letter
+	sol[x][y] = l
+
+	# Then we're getting the next path (looking at the map)
+	a, b = next_path map, x, y
+
+	# If it's the same coords, we're in a sink
+	if a == x && b == y
+		#puts "Sink at " + x.to_s + " " + y.to_s
+		# If we're in a sink, we can just return the letter it's become
+		return sol[x][y]
+	end
+
+	# Otherwise it's not a sink, so let's go traversing
+	# the new coords and trap the letter it brings back
+	new_l = traverse map, sol, a, b, l
+	# If it's brought back a new letter, we'll set it now
 	sol[x][y] = new_l
-	#; And we'll return it for the rest of the path, hopefully
+	# And we'll return it for the rest of the path, where we came from
 	return new_l
 
 end
 
 def solve map
 
-	solution = Array.new map
+	solution = Marshal.load( Marshal.dump(map) )
 	letter = 'a'
 
 	while !solved solution
-		letter = next_letter letter
 		x,y = next_point solution
-		traverse map, solution, x, y, letter
+		letter = traverse map, solution, x, y, letter
+		letter = next_letter letter
 	end
 
 	return solution
 end
 
 
-#; MAIN
+# MAIN
 
 T = gets.chomp.to_i
 
-for i in 1..1
+for i in 1..T
 
 	hw = gets.chomp.split ' '
 	h = hw[0].to_i
@@ -149,4 +183,5 @@ for i in 1..1
 
 	puts "Case #" + i.to_s + ":"
 	display solve map
+	puts
 end
