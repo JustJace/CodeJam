@@ -22,10 +22,10 @@ end
 
 
 def solve(w, g, v)
-	
+
 	if !$words.include?('|' + g)
 		return v
-	elsif g.length == $L && $words.include?('|' + g + '|')
+	elsif $words.include?('|' + g + '|')
 		return v + 1
 	end
 
@@ -44,7 +44,7 @@ end
 
 
 LDN = gets.chomp.split(' ')
-$L = LDN[0].to_i
+L = LDN[0].to_i
 D = LDN[1].to_i
 N = LDN[2].to_i
 
